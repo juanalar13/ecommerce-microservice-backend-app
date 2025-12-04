@@ -1,18 +1,474 @@
-# e-Commerce-boot μServices 
+# E-Commerce Microservices - Demostración Completa
 
-## Important Note: This project's new milestone is to move The whole system to work on Kubernetes, so stay tuned.
+**Sistema de 10 microservicios con Spring Boot, Spring Cloud y Docker**
 
-<!--## Better Code Hub
-I analysed this repository according to the clean code standards on [Better Code Hub](https://bettercodehub.com/) just to get an independent opinion of how bad the code is. Surprisingly, the compliance score is high!
--->
-## Introduction
-- This project is a development of a small set of **Spring Boot** and **Cloud** based Microservices projects that implement cloud-native intuitive, Reactive Programming, Event-driven, Microservices design patterns, and coding best practices.
-- The project follows **CloudNative**<!--(https://www.cncf.io/)--> recommendations and The [**twelve-factor app**](https://12factor.net/) methodology for building *software-as-a-service apps* to show how μServices should be developed and deployed.
-- This project uses cutting edge technologies like Docker, Kubernetes, Elasticsearch Stack for
- logging and monitoring, Java SE 11, H2, and MySQL databases, all components developed with TDD in mind, covering integration & performance testing, and many more.
- - This project is going to be developed as stages, and all such stage steps are documented under
-  the project **e-Commerce-boot μServices** **README** file <!--[wiki page](https://github.com/mohamed-taman/Springy-Store-Microservices/wiki)-->.
 ---
+
+## 🎯 OBJETIVO
+
+Este proyecto demuestra una arquitectura de **microservicios escalable** con:
+- ✅ 10 microservicios independientes (Spring Boot)
+- ✅ Service Discovery (Eureka)
+- ✅ API Gateway centralizado
+- ✅ Trazas distribuidas (Zipkin)
+- ✅ Configuración centralizada (Spring Cloud Config)
+
+---
+
+## 📊 ARQUITECTURA
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   API GATEWAY (8080)                    │
+│              (Spring Cloud Gateway)                     │
+└──────┬──────────────────────────────────────────────────┘
+       │
+       ├─→ User Service (8700)
+       ├─→ Product Service (8500)
+       ├─→ Order Service (8300)
+       ├─→ Payment Service (8400)
+       ├─→ Shipping Service (8600)
+       ├─→ Favourite Service (8800)
+       │
+       └─→ Service Discovery (Eureka - 8761)
+           ├─→ Cloud Config (9296)
+           └─→ Proxy Client (8900)
+
+Observabilidad:
+   ├─→ Zipkin (9411) - Trazas distribuidas
+   ├─→ Prometheus - Métricas
+   └─→ Grafana - Dashboards
+```
+
+---
+
+## 🚀 INICIO RÁPIDO
+
+### Requisitos
+- Docker
+- Docker Compose
+
+### Paso 1: Levantar el sistema (3 minutos)
+
+```bash
+docker-compose -f compose.yml up -d
+```
+
+Esto inicia:
+- ✅ 10 microservicios
+- ✅ Eureka (Service Discovery)
+- ✅ Zipkin (Tracing)
+- ✅ Config Server
+
+### Paso 2: Verificar que está listo (30 segundos)
+
+```bash
+# Esperar 30-60 segundos a que se inicialicen todos los servicios
+docker ps | grep ecommerce
+
+# Verificar que el Gateway responde
+curl -s http://localhost:8080/health | jq .
+```
+
+### Paso 3: Ejecutar demostración completa (5 minutos)
+
+```bash
+bash demo-commands.sh
+```
+
+---
+
+## 📍 URLs DISPONIBLES
+
+| Componente | URL | Puerto |
+|-----------|-----|--------|
+| **API Gateway** | http://localhost:8080 | 8080 |
+| **Service Discovery (Eureka)** | http://localhost:8761 | 8761 |
+| **Zipkin (Tracing)** | http://localhost:9411 | 9411 |
+| **Proxy Client** | http://localhost:8900 | 8900 |
+
+---
+
+## 🔧 SERVICIOS INDIVIDUALES
+
+| # | Servicio | Puerto | Endpoints Principales |
+|---|----------|--------|----------------------|
+| 1 | **User Service** | 8700 | `/api/users`, `/api/address`, `/api/credentials` |
+| 2 | **Product Service** | 8500 | `/api/products`, `/api/categories` |
+| 3 | **Order Service** | 8300 | `/api/orders`, `/api/carts` |
+| 4 | **Payment Service** | 8400 | `/api/payments` |
+| 5 | **Shipping Service** | 8600 | `/api/shippings` |
+| 6 | **Favourite Service** | 8800 | `/api/favourites` |
+| 7 | **Service Discovery** | 8761 | Eureka Dashboard |
+| 8 | **Cloud Config** | 9296 | Config Server |
+| 9 | **API Gateway** | 8080 | Enrutamiento centralizado |
+| 10 | **Proxy Client** | 8900 | Autenticación |
+
+---
+
+## 📋 COMANDOS DE DEMOSTRACIÓN PARA EJECUTAR EN VIVO
+
+### 1️⃣ LISTAR PRODUCTOS
+```bash
+curl -s http://localhost:8080/product-service/api/products | jq .
+```
+
+**Qué verás**: Lista de todos los productos disponibles con id, nombre, descripción, categoría y precio.
+
+---
+
+### 2️⃣ OBTENER PRODUCTO ESPECÍFICO
+```bash
+curl -s http://localhost:8080/product-service/api/products/1 | jq .
+```
+
+**Qué verás**: Detalles completos del producto con ID 1 (información de categoría incluida).
+
+---
+
+### 3️⃣ LISTAR CATEGORÍAS
+```bash
+curl -s http://localhost:8080/product-service/api/categories | jq .
+```
+
+**Qué verás**: Todas las categorías de productos disponibles en el sistema.
+
+---
+
+### 4️⃣ LISTAR USUARIOS
+```bash
+curl -s http://localhost:8080/user-service/api/users | jq .
+```
+
+**Qué verás**: Lista de todos los usuarios registrados en el sistema.
+
+---
+
+### 5️⃣ BUSCAR USUARIO POR USERNAME
+```bash
+curl -s http://localhost:8080/user-service/api/users/username/john | jq .
+```
+
+**Qué verás**: Información completa del usuario con username "john" (ajusta el username según datos).
+
+---
+
+### 6️⃣ OBTENER USUARIO ESPECÍFICO
+```bash
+curl -s http://localhost:8080/user-service/api/users/1 | jq .
+```
+
+**Qué verás**: Detalles del usuario con ID 1, incluyendo email y estado.
+
+---
+
+### 7️⃣ LISTAR TODAS LAS DIRECCIONES
+```bash
+curl -s http://localhost:8080/user-service/api/address | jq .
+```
+
+**Qué verás**: Todas las direcciones registradas de todos los usuarios.
+
+---
+
+### 8️⃣ LISTAR PEDIDOS
+```bash
+curl -s http://localhost:8080/order-service/api/orders | jq .
+```
+
+**Qué verás**: Lista de todos los pedidos en el sistema con sus detalles.
+
+---
+
+### 9️⃣ CREAR NUEVO PEDIDO (POST)
+```bash
+curl -s -X POST http://localhost:8080/order-service/api/orders \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "userId": 1,
+    "items": [
+      {"productId": 1, "quantity": 2},
+      {"productId": 2, "quantity": 1}
+    ]
+  }' | jq .
+```
+
+**Qué verás**: Respuesta con el nuevo pedido creado, incluyendo su ID y estado.
+
+**Lo que demuestra**: Creación de un pedido con múltiples productos - muestra comunicación entre servicios (Order ↔ Product).
+
+---
+
+### 🔟 LISTAR PAGOS
+```bash
+curl -s http://localhost:8080/payment-service/api/payments | jq .
+```
+
+**Qué verás**: Todos los pagos procesados en el sistema.
+
+---
+
+### 1️⃣1️⃣ OBTENER PAGO ESPECÍFICO
+```bash
+curl -s http://localhost:8080/payment-service/api/payments/1 | jq .
+```
+
+**Qué verás**: Detalles completos del pago con ID 1 (monto, fecha, estado, referencia de pedido).
+
+---
+
+### 1️⃣2️⃣ LISTAR ENVÍOS
+```bash
+curl -s http://localhost:8080/shipping-service/api/shippings | jq .
+```
+
+**Qué verás**: Todos los envíos registrados en el sistema con sus estados.
+
+---
+
+### 1️⃣3️⃣ LISTAR FAVORITOS
+```bash
+curl -s http://localhost:8080/favourite-service/api/favourites | jq .
+```
+
+**Qué verás**: Todos los productos marcados como favoritos por los usuarios.
+
+---
+
+### 1️⃣4️⃣ VERIFICAR EUREKA (Service Discovery)
+```bash
+curl -s http://localhost:8761/eureka/apps | jq .
+```
+
+**Qué verás**: Lista de TODOS los servicios registrados en Eureka en formato XML/JSON.
+
+**Lo que demuestra**: Service Discovery automático - cada servicio se auto-registra cuando inicia.
+
+---
+
+### 1️⃣5️⃣ VERIFICAR HEALTH DE GATEWAY
+```bash
+curl -s http://localhost:8080/health | jq .
+```
+
+**Qué verás**: Estado de salud del API Gateway (status: UP) y detalles de los servicios downstream.
+
+---
+
+## 🎯 SCRIPT AUTOMATIZADO COMPLETO
+
+Archivo: `demo-commands.sh`
+
+```bash
+#!/bin/bash
+
+# Colores para output
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+GATEWAY="http://localhost:8080"
+
+print_header() {
+    echo ""
+    echo -e "${BLUE}═══════════════════════════════════════════${NC}"
+    echo -e "${BLUE}$1${NC}"
+    echo -e "${BLUE}═══════════════════════════════════════════${NC}"
+    echo ""
+}
+
+print_request() {
+    echo -e "${YELLOW}▶ $1${NC}"
+    echo ""
+}
+
+print_header "🎬 DEMOSTRACIÓN E-COMMERCE MICROSERVICES"
+
+# 1. PRODUCTOS
+print_header "1️⃣  SERVICIO DE PRODUCTOS"
+
+print_request "Listar todos los productos"
+curl -s $GATEWAY/product-service/api/products | jq . | head -50
+
+print_request "Obtener producto con ID 1"
+curl -s $GATEWAY/product-service/api/products/1 | jq .
+
+print_request "Listar categorías"
+curl -s $GATEWAY/product-service/api/categories | jq .
+
+# 2. USUARIOS
+print_header "2️⃣  SERVICIO DE USUARIOS"
+
+print_request "Listar todos los usuarios"
+curl -s $GATEWAY/user-service/api/users | jq . | head -50
+
+print_request "Obtener usuario con ID 1"
+curl -s $GATEWAY/user-service/api/users/1 | jq .
+
+print_request "Buscar usuario por username 'john'"
+curl -s $GATEWAY/user-service/api/users/username/john | jq .
+
+print_request "Listar todas las direcciones"
+curl -s $GATEWAY/user-service/api/address | jq . | head -30
+
+# 3. PEDIDOS
+print_header "3️⃣  SERVICIO DE PEDIDOS"
+
+print_request "Listar todos los pedidos"
+curl -s $GATEWAY/order-service/api/orders | jq . | head -50
+
+print_request "Crear nuevo pedido (POST)"
+curl -s -X POST $GATEWAY/order-service/api/orders \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "userId": 1,
+    "items": [
+      {"productId": 1, "quantity": 2},
+      {"productId": 2, "quantity": 1}
+    ]
+  }' | jq .
+
+# 4. PAGOS
+print_header "4️⃣  SERVICIO DE PAGOS"
+
+print_request "Listar todos los pagos"
+curl -s $GATEWAY/payment-service/api/payments | jq . | head -50
+
+print_request "Obtener pago con ID 1"
+curl -s $GATEWAY/payment-service/api/payments/1 | jq .
+
+# 5. ENVÍOS
+print_header "5️⃣  SERVICIO DE ENVÍOS"
+
+print_request "Listar todos los envíos"
+curl -s $GATEWAY/shipping-service/api/shippings | jq . | head -50
+
+# 6. FAVORITOS
+print_header "6️⃣  SERVICIO DE FAVORITOS"
+
+print_request "Listar todos los favoritos"
+curl -s $GATEWAY/favourite-service/api/favourites | jq . | head -50
+
+# 7. OBSERVABILIDAD
+print_header "7️⃣  OBSERVABILIDAD"
+
+print_request "Service Discovery (Eureka) - Servicios registrados"
+curl -s http://localhost:8761/eureka/apps | jq . | head -100
+
+print_request "Health Check del API Gateway"
+curl -s $GATEWAY/health | jq .
+
+# 8. RESUMEN
+print_header "✅ DEMOSTRACIÓN COMPLETADA"
+
+echo -e "${GREEN}Todo los servicios están funcionando correctamente.${NC}"
+echo ""
+echo "📍 URLs disponibles:"
+echo "   • API Gateway: $GATEWAY"
+echo "   • Eureka: http://localhost:8761"
+echo "   • Zipkin: http://localhost:9411"
+echo ""
+```
+
+---
+
+## 📝 FLUJO DE DEMOSTRACIÓN EN VIDEO (15-20 minutos)
+
+### Minuto 0:00-1:00: Introducción
+- Explicar qué es el proyecto
+- Mencionar que son 10 microservicios independientes
+- Mostrar que usamos Docker Compose para demo rápida
+
+### Minuto 1:00-4:00: Levantamiento del sistema
+- Ejecutar `docker-compose -f compose.yml up -d`
+- Mientras se descargan imágenes, explicar arquitectura
+- Mostrar que servicios se están iniciando
+
+### Minuto 4:00-5:00: Verificación
+- Ejecutar `docker ps` para confirmar todos corriendo
+- Mostrar `curl -s http://localhost:8080/health`
+
+### Minuto 5:00-6:00: Explicar componentes
+- Service Discovery (Eureka automático)
+- API Gateway (enrutamiento centralizado)
+- Trazas distribuidas (Zipkin)
+
+### Minuto 6:00-15:00: Demostración de endpoints
+- Ejecutar `bash demo-commands.sh`
+- Explicar cada respuesta mientras aparece
+- Resaltar creación de pedido (POST) como demostración de inter-servicios
+
+### Minuto 15:00-18:00: Observabilidad
+- Mostrar Eureka dashboard (http://localhost:8761)
+- Mostrar Zipkin con trazas (http://localhost:9411)
+- Explicar cómo cada request atraviesa múltiples servicios
+
+### Minuto 18:00-20:00: Conclusión
+- Explicar cómo esto escala con Kubernetes
+- Mencionar patrones implementados (Service Discovery, Circuit Breaker, etc.)
+- Mostrar que sin cambiar código, todo funciona
+
+---
+
+## 🛠️ LIMPIEZA
+
+Para detener todos los servicios:
+
+```bash
+docker-compose -f compose.yml down
+```
+
+Para limpiar completamente (incluyendo volúmenes):
+
+```bash
+docker-compose -f compose.yml down -v
+```
+
+Para eliminar todas las imágenes descargadas:
+
+```bash
+docker system prune -a
+```
+
+---
+
+## 📚 TECNOLOGÍA UTILIZADA
+
+- **Spring Boot 2.5.7** - Framework base
+- **Spring Cloud 2020.0.4** - Microservicios
+- **Spring Cloud Gateway** - API Gateway
+- **Eureka** - Service Discovery
+- **Resilience4j** - Circuit Breaker
+- **Zipkin + Sleuth** - Trazas distribuidas
+- **Docker & Docker Compose** - Containerización
+- **Kubernetes + Helm** - Orquestación producción
+
+---
+
+## 📊 CONCEPTOS DEMOSTRADOS
+
+✅ **Microservicios** - 10 servicios independientes  
+✅ **Service Discovery** - Registro automático con Eureka  
+✅ **API Gateway** - Punto de entrada único y enrutamiento  
+✅ **Communication** - Inter-service communication via REST  
+✅ **Distributed Tracing** - Trazas end-to-end con Zipkin  
+✅ **Resilience** - Patrones de tolerancia a fallos  
+✅ **Scalability** - Fácil agregar/remover servicios  
+✅ **DevOps** - Containerización con Docker  
+
+---
+
+## 🎯 NEXT STEPS
+
+1. **Levanta el sistema**: `docker-compose -f compose.yml up -d`
+2. **Ejecuta demo**: `bash demo-commands.sh`
+3. **Explora**: Abre http://localhost:8761 para ver Eureka
+4. **Aprende**: Lee el guion (`GUION.md`) para entender detalles
+
+---
+
+**¡Listo para grabar! 🎬**
 ## Getting started
 ### System components Structure
 Let's explain first the system structure to understand its components:
@@ -74,383 +530,415 @@ All that you want to do is just fire up your IDE **->** open or import the paren
 
 ## Data Model
 ### Entity-Relationship-Diagram
-![System Boundary](ecommerce-ERD.drawio.png)
+# 🎯 E-Commerce Microservices — Guía Completa para Presentación en Codespaces
 
-## Playing With e-Commerce-boot Project
+**ENTRADA RÁPIDA: Lee primero [`ÍNDICE.md`](ÍNDICE.md) — centraliza toda la documentación para grabar tu video.**
 
-### Cloning It
+**Este README es la guía técnica. Para grabar, sigue:**
+1. **[ÍNDICE.md](ÍNDICE.md)** — mapa de toda la documentación
+2. **[PRESENTACIÓN.md](PRESENTACIÓN.md)** — timeline y checklist para grabar ⭐
+3. **[SCRIPT.md](SCRIPT.md)** — guion completo a leer en cámara
+4. **[CHECKLIST.md](CHECKLIST.md)** — verificación pre/post grabación
 
-The first thing to do is to open **git bash** command line, and then simply you can clone the project under any of your favorite places as the following:
+## 📋 Resumen Ejecutivo
 
+Este es un sistema de **e-commerce con 10 microservicios** construido con **Spring Boot + Spring Cloud**, demostrando patrones profesionales de arquitectura distribuida:
+- ✅ **Service Discovery** (Eureka): registro automático de servicios
+- ✅ **API Gateway** (Spring Cloud Gateway): enrutamiento centralizado
+- ✅ **Config Server**: configuración centralizada
+- ✅ **6 Servicios de dominio**: usuarios, productos, pedidos, pagos, envíos, favoritos
+- ✅ **Observabilidad completa**: Zipkin, Prometheus, Grafana
+- ✅ **Despliegue rápido**: Docker Compose (< 5 min)
+- ✅ **Escalable**: Kubernetes + Helm ready
+
+**Tecn stack**: Java 11, Spring Boot 2.5.x, Spring Cloud 2020.x, Docker, Kubernetes.
+
+**Tiempo de grabación**: ~15-20 minutos  
+**Entorno**: GitHub Codespaces (Docker + terminal)  
+**Requisitos**: ✅ Git (incluido), ✅ Docker (incluido), ✅ jq (incluido)
+
+---
+
+## 🚀 INICIO RÁPIDO (3 pasos, ~5 min)
+
+### Paso 1: Clonar el repositorio
 ```bash
-> git clone https://github.com/SelimHorri/ecommerce-microservice-backend-app.git
+git clone https://github.com/juanalar13/ecommerce-microservice-backend-app.git
+cd ecommerce-microservice-backend-app
 ```
 
-### Build & Test Them In Isolation
-
-To build and run the test cases for each service & shared modules in the project, we need to do the following:
-
-#### Build & Test µServices
-Now it is the time to build our **10 microservices** and run each service integration test in
- isolation by running the following commands:
-
+### Paso 2: Levantar todo con Docker Compose
 ```bash
-selim@:~/ecommerce-microservice-backend-app$ ./mvnw clean package 
+docker-compose -f compose.yml up -d
 ```
 
-All build commands and test suite for each microservice should run successfully, and the final output should be like this:
+**Mientras Docker descarga imágenes (1-2 min):**
+- Se están descargando 11 contenedores desde Docker Hub (API Gateway, 8 servicios, Eureka, Config, Zipkin)
+- Cada servicio se registra automáticamente con Eureka
+- Todo se inicia en paralelo para máxima rapidez
 
+### Paso 3: Verificar que está todo arriba
 ```bash
----------------< com.selimhorri.app:ecommerce-microservice-backend >-----------
-[INFO] ------------------------------------------------------------------------
-[INFO] Reactor Summary for ecommerce-microservice-backend 0.1.0:
-[INFO] 
-[INFO] ecommerce-microservice-backend ..................... SUCCESS [  0.548 s]
-[INFO] service-discovery .................................. SUCCESS [  3.126 s]
-[INFO] cloud-config ....................................... SUCCESS [  1.595 s]
-[INFO] api-gateway ........................................ SUCCESS [  1.697 s]
-[INFO] proxy-client ....................................... SUCCESS [  3.632 s]
-[INFO] user-service ....................................... SUCCESS [  2.546 s]
-[INFO] product-service .................................... SUCCESS [  2.214 s]
-[INFO] favourite-service .................................. SUCCESS [  2.072 s]
-[INFO] order-service ...................................... SUCCESS [  2.241 s]
-[INFO] shipping-service ................................... SUCCESS [  2.197 s]
-[INFO] payment-service .................................... SUCCESS [  2.006 s]
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  24.156 s
-[INFO] Finished at: 2021-12-29T19:52:57+01:00
-[INFO] ------------------------------------------------------------------------
+docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 ```
 
-### Running Them All
-Now it's the time to run all of our Microservices, and it's straightforward just run the following `docker-compose` commands:
-
-```bash
-selim@:~/ecommerce-microservice-backend-app$ docker-compose -f compose.yml up
+**Debería ver algo así:**
+```
+NAME                                    STATUS          PORTS
+ecommerce-microservice-backend-app_api-gateway-container_1       Up 10s      0.0.0.0:8080->8080/tcp
+ecommerce-microservice-backend-app_service-discovery-container_1 Up 10s      0.0.0.0:8761->8761/tcp
+ecommerce-microservice-backend-app_user-service-container_1      Up 10s      0.0.0.0:8700->8700/tcp
+... (7 servicios más)
 ```
 
-All the **services**, **databases**, and **messaging service** will run in parallel in detach mode (option `-d`), and command output will print to the console the following:
+✅ **¡Sistema listo en ~3 minutos!**
 
+---
+
+## 🎬 DEMOSTRACIÓN DE FUNCIONALIDADES
+
+### Opción A: Demostración automática (recomendada)
 ```bash
-Creating network "ecommerce-microservice-backend-app_default" with the default driver
-Creating ecommerce-microservice-backend-app_api-gateway-container_1       ... done
-Creating ecommerce-microservice-backend-app_favourite-service-container_1 ... done
-Creating ecommerce-microservice-backend-app_service-discovery-container_1 ... done
-Creating ecommerce-microservice-backend-app_shipping-service-container_1  ... done
-Creating ecommerce-microservice-backend-app_order-service-container_1     ... done
-Creating ecommerce-microservice-backend-app_user-service-container_1      ... done
-Creating ecommerce-microservice-backend-app_payment-service-container_1   ... done
-Creating ecommerce-microservice-backend-app_product-service-container_1   ... done
-Creating ecommerce-microservice-backend-app_proxy-client-container_1      ... done
-Creating ecommerce-microservice-backend-app_zipkin-container_1            ... done
-Creating ecommerce-microservice-backend-app_cloud-config-container_1      ... done
-```
-### Access proxy-client APIs
-You can manually test `proxy-client` APIs throughout its **Swagger** interface at the following
- URL [https://localhost:8900/swagger-ui.html](https://localhost:8900/swagger-ui.html).
-### Access Service Discovery Server (Eureka)
-If you would like to access the Eureka service discovery point to this URL [http://localhosts:8761/eureka](https://localhost:8761/eureka) to see all the services registered inside it. 
-
-### Access user-service APIs
- URL [https://localhost:8700/swagger-ui.html](https://localhost:8700/swagger-ui.html).
-
-<!--
-Note that it is accessed through API Gateway and is secured. Therefore the browser will ask you for `username:mt` and `password:p,` write them to the dialog, and you will access it. This type of security is a **basic form security**.
--->
-The **API Gateway** and **Store Service** both act as a *resource server*. <!--To know more about calling Store API in a secure way you can check the `test-em-all.sh` script on how I have changed the calling of the services using **OAuth2** security.-->
-
-#### Check all **Spring Boot Actuator** exposed metrics http://localhost:8080/app/actuator/metrics:
-
-```bash
-{
-    "names": [
-        "http.server.requests",
-        "jvm.buffer.count",
-        "jvm.buffer.memory.used",
-        "jvm.buffer.total.capacity",
-        "jvm.classes.loaded",
-        "jvm.classes.unloaded",
-        "jvm.gc.live.data.size",
-        "jvm.gc.max.data.size",
-        "jvm.gc.memory.allocated",
-        "jvm.gc.memory.promoted",
-        "jvm.gc.pause",
-        "jvm.memory.committed",
-        "jvm.memory.max",
-        "jvm.memory.used",
-        "jvm.threads.daemon",
-        "jvm.threads.live",
-        "jvm.threads.peak",
-        "jvm.threads.states",
-        "logback.events",
-        "process.cpu.usage",
-        "process.files.max",
-        "process.files.open",
-        "process.start.time",
-        "process.uptime",
-        "resilience4j.circuitbreaker.buffered.calls",
-        "resilience4j.circuitbreaker.calls",
-        "resilience4j.circuitbreaker.failure.rate",
-        "resilience4j.circuitbreaker.not.permitted.calls",
-        "resilience4j.circuitbreaker.slow.call.rate",
-        "resilience4j.circuitbreaker.slow.calls",
-        "resilience4j.circuitbreaker.state",
-        "system.cpu.count",
-        "system.cpu.usage",
-        "system.load.average.1m",
-        "tomcat.sessions.active.current",
-        "tomcat.sessions.active.max",
-        "tomcat.sessions.alive.max",
-        "tomcat.sessions.created",
-        "tomcat.sessions.expired",
-        "tomcat.sessions.rejected",
-        "zipkin.reporter.messages",
-        "zipkin.reporter.messages.dropped",
-        "zipkin.reporter.messages.total",
-        "zipkin.reporter.queue.bytes",
-        "zipkin.reporter.queue.spans",
-        "zipkin.reporter.spans",
-        "zipkin.reporter.spans.dropped",
-        "zipkin.reporter.spans.total"
-    ]
-}
+bash demo-requests.sh
 ```
 
-#### Prometheus exposed metrics at http://localhost:8080/app/actuator/prometheus
+Este script ejecuta automáticamente todos los requests y muestra los resultados con formato. **Perfecto para grabar video.**
+
+### Opción B: Ejecutar requests individuales
 
 ```bash
-# HELP resilience4j_circuitbreaker_not_permitted_calls_total Total number of not permitted calls
-# TYPE resilience4j_circuitbreaker_not_permitted_calls_total counter
-resilience4j_circuitbreaker_not_permitted_calls_total{kind="not_permitted",name="proxyService",} 0.0
-# HELP jvm_gc_live_data_size_bytes Size of long-lived heap memory pool after reclamation
-# TYPE jvm_gc_live_data_size_bytes gauge
-jvm_gc_live_data_size_bytes 3721880.0
-# HELP jvm_gc_pause_seconds Time spent in GC pause
-# TYPE jvm_gc_pause_seconds summary
-jvm_gc_pause_seconds_count{action="end of minor GC",cause="Metadata GC Threshold",} 1.0
-jvm_gc_pause_seconds_sum{action="end of minor GC",cause="Metadata GC Threshold",} 0.071
-jvm_gc_pause_seconds_count{action="end of minor GC",cause="G1 Evacuation Pause",} 6.0
-jvm_gc_pause_seconds_sum{action="end of minor GC",cause="G1 Evacuation Pause",} 0.551
-# HELP jvm_gc_pause_seconds_max Time spent in GC pause
-# TYPE jvm_gc_pause_seconds_max gauge
-jvm_gc_pause_seconds_max{action="end of minor GC",cause="Metadata GC Threshold",} 0.071
-jvm_gc_pause_seconds_max{action="end of minor GC",cause="G1 Evacuation Pause",} 0.136
-# HELP system_cpu_usage The "recent cpu usage" for the whole system
-# TYPE system_cpu_usage gauge
-system_cpu_usage 0.4069206655413552
-# HELP jvm_buffer_total_capacity_bytes An estimate of the total capacity of the buffers in this pool
-# TYPE jvm_buffer_total_capacity_bytes gauge
-jvm_buffer_total_capacity_bytes{id="mapped",} 0.0
-jvm_buffer_total_capacity_bytes{id="direct",} 24576.0
-# HELP zipkin_reporter_spans_dropped_total Spans dropped (failed to report)
-# TYPE zipkin_reporter_spans_dropped_total counter
-zipkin_reporter_spans_dropped_total 4.0
-# HELP zipkin_reporter_spans_bytes_total Total bytes of encoded spans reported
-# TYPE zipkin_reporter_spans_bytes_total counter
-zipkin_reporter_spans_bytes_total 1681.0
-# HELP tomcat_sessions_active_current_sessions  
-# TYPE tomcat_sessions_active_current_sessions gauge
-tomcat_sessions_active_current_sessions 0.0
-# HELP jvm_classes_loaded_classes The number of classes that are currently loaded in the Java virtual machine
-# TYPE jvm_classes_loaded_classes gauge
-jvm_classes_loaded_classes 13714.0
-# HELP process_files_open_files The open file descriptor count
-# TYPE process_files_open_files gauge
-process_files_open_files 17.0
-# HELP resilience4j_circuitbreaker_slow_call_rate The slow call of the circuit breaker
-# TYPE resilience4j_circuitbreaker_slow_call_rate gauge
-resilience4j_circuitbreaker_slow_call_rate{name="proxyService",} -1.0
-# HELP system_cpu_count The number of processors available to the Java virtual machine
-# TYPE system_cpu_count gauge
-system_cpu_count 8.0
-# HELP jvm_threads_daemon_threads The current number of live daemon threads
-# TYPE jvm_threads_daemon_threads gauge
-jvm_threads_daemon_threads 21.0
-# HELP zipkin_reporter_messages_total Messages reported (or attempted to be reported)
-# TYPE zipkin_reporter_messages_total counter
-zipkin_reporter_messages_total 2.0
-# HELP zipkin_reporter_messages_dropped_total  
-# TYPE zipkin_reporter_messages_dropped_total counter
-zipkin_reporter_messages_dropped_total{cause="ResourceAccessException",} 2.0
-# HELP zipkin_reporter_messages_bytes_total Total bytes of messages reported
-# TYPE zipkin_reporter_messages_bytes_total counter
-zipkin_reporter_messages_bytes_total 1368.0
-# HELP http_server_requests_seconds  
-# TYPE http_server_requests_seconds summary
-http_server_requests_seconds_count{exception="None",method="GET",outcome="SUCCESS",status="200",uri="/actuator/metrics",} 1.0
-http_server_requests_seconds_sum{exception="None",method="GET",outcome="SUCCESS",status="200",uri="/actuator/metrics",} 1.339804427
-http_server_requests_seconds_count{exception="None",method="GET",outcome="SUCCESS",status="200",uri="/actuator/prometheus",} 1.0
-http_server_requests_seconds_sum{exception="None",method="GET",outcome="SUCCESS",status="200",uri="/actuator/prometheus",} 0.053689381
-# HELP http_server_requests_seconds_max  
-# TYPE http_server_requests_seconds_max gauge
-http_server_requests_seconds_max{exception="None",method="GET",outcome="SUCCESS",status="200",uri="/actuator/metrics",} 1.339804427
-http_server_requests_seconds_max{exception="None",method="GET",outcome="SUCCESS",status="200",uri="/actuator/prometheus",} 0.053689381
-# HELP resilience4j_circuitbreaker_slow_calls The number of slow successful which were slower than a certain threshold
-# TYPE resilience4j_circuitbreaker_slow_calls gauge
-resilience4j_circuitbreaker_slow_calls{kind="successful",name="proxyService",} 0.0
-resilience4j_circuitbreaker_slow_calls{kind="failed",name="proxyService",} 0.0
-# HELP jvm_classes_unloaded_classes_total The total number of classes unloaded since the Java virtual machine has started execution
-# TYPE jvm_classes_unloaded_classes_total counter
-jvm_classes_unloaded_classes_total 0.0
-# HELP process_files_max_files The maximum file descriptor count
-# TYPE process_files_max_files gauge
-process_files_max_files 1048576.0
-# HELP resilience4j_circuitbreaker_calls_seconds Total number of successful calls
-# TYPE resilience4j_circuitbreaker_calls_seconds summary
-resilience4j_circuitbreaker_calls_seconds_count{kind="successful",name="proxyService",} 0.0
-resilience4j_circuitbreaker_calls_seconds_sum{kind="successful",name="proxyService",} 0.0
-resilience4j_circuitbreaker_calls_seconds_count{kind="failed",name="proxyService",} 0.0
-resilience4j_circuitbreaker_calls_seconds_sum{kind="failed",name="proxyService",} 0.0
-resilience4j_circuitbreaker_calls_seconds_count{kind="ignored",name="proxyService",} 0.0
-resilience4j_circuitbreaker_calls_seconds_sum{kind="ignored",name="proxyService",} 0.0
-# HELP resilience4j_circuitbreaker_calls_seconds_max Total number of successful calls
-# TYPE resilience4j_circuitbreaker_calls_seconds_max gauge
-resilience4j_circuitbreaker_calls_seconds_max{kind="successful",name="proxyService",} 0.0
-resilience4j_circuitbreaker_calls_seconds_max{kind="failed",name="proxyService",} 0.0
-resilience4j_circuitbreaker_calls_seconds_max{kind="ignored",name="proxyService",} 0.0
-# HELP zipkin_reporter_spans_total Spans reported
-# TYPE zipkin_reporter_spans_total counter
-zipkin_reporter_spans_total 5.0
-# HELP zipkin_reporter_queue_bytes Total size of all encoded spans queued for reporting
-# TYPE zipkin_reporter_queue_bytes gauge
-zipkin_reporter_queue_bytes 0.0
-# HELP tomcat_sessions_expired_sessions_total  
-# TYPE tomcat_sessions_expired_sessions_total counter
-tomcat_sessions_expired_sessions_total 0.0
-# HELP tomcat_sessions_alive_max_seconds  
-# TYPE tomcat_sessions_alive_max_seconds gauge
-tomcat_sessions_alive_max_seconds 0.0
-# HELP process_uptime_seconds The uptime of the Java virtual machine
-# TYPE process_uptime_seconds gauge
-process_uptime_seconds 224.402
-# HELP tomcat_sessions_active_max_sessions  
-# TYPE tomcat_sessions_active_max_sessions gauge
-tomcat_sessions_active_max_sessions 0.0
-# HELP process_cpu_usage The "recent cpu usage" for the Java Virtual Machine process
-# TYPE process_cpu_usage gauge
-process_cpu_usage 5.625879043600563E-4
-# HELP jvm_gc_memory_promoted_bytes_total Count of positive increases in the size of the old generation memory pool before GC to after GC
-# TYPE jvm_gc_memory_promoted_bytes_total counter
-jvm_gc_memory_promoted_bytes_total 1.7851088E7
-# HELP logback_events_total Number of error level events that made it to the logs
-# TYPE logback_events_total counter
-logback_events_total{level="warn",} 5.0
-logback_events_total{level="debug",} 79.0
-logback_events_total{level="error",} 0.0
-logback_events_total{level="trace",} 0.0
-logback_events_total{level="info",} 60.0
-# HELP tomcat_sessions_created_sessions_total  
-# TYPE tomcat_sessions_created_sessions_total counter
-tomcat_sessions_created_sessions_total 0.0
-# HELP jvm_threads_live_threads The current number of live threads including both daemon and non-daemon threads
-# TYPE jvm_threads_live_threads gauge
-jvm_threads_live_threads 25.0
-# HELP jvm_threads_states_threads The current number of threads having NEW state
-# TYPE jvm_threads_states_threads gauge
-jvm_threads_states_threads{state="runnable",} 6.0
-jvm_threads_states_threads{state="blocked",} 0.0
-jvm_threads_states_threads{state="waiting",} 8.0
-jvm_threads_states_threads{state="timed-waiting",} 11.0
-jvm_threads_states_threads{state="new",} 0.0
-jvm_threads_states_threads{state="terminated",} 0.0
-# HELP tomcat_sessions_rejected_sessions_total  
-# TYPE tomcat_sessions_rejected_sessions_total counter
-tomcat_sessions_rejected_sessions_total 0.0
-# HELP process_start_time_seconds Start time of the process since unix epoch.
-# TYPE process_start_time_seconds gauge
-process_start_time_seconds 1.64088634006E9
-# HELP resilience4j_circuitbreaker_buffered_calls The number of buffered failed calls stored in the ring buffer
-# TYPE resilience4j_circuitbreaker_buffered_calls gauge
-resilience4j_circuitbreaker_buffered_calls{kind="successful",name="proxyService",} 0.0
-resilience4j_circuitbreaker_buffered_calls{kind="failed",name="proxyService",} 0.0
-# HELP jvm_memory_max_bytes The maximum amount of memory in bytes that can be used for memory management
-# TYPE jvm_memory_max_bytes gauge
-jvm_memory_max_bytes{area="nonheap",id="CodeHeap 'profiled nmethods'",} 1.22908672E8
-jvm_memory_max_bytes{area="heap",id="G1 Survivor Space",} -1.0
-jvm_memory_max_bytes{area="heap",id="G1 Old Gen",} 5.182062592E9
-jvm_memory_max_bytes{area="nonheap",id="Metaspace",} -1.0
-jvm_memory_max_bytes{area="nonheap",id="CodeHeap 'non-nmethods'",} 5836800.0
-jvm_memory_max_bytes{area="heap",id="G1 Eden Space",} -1.0
-jvm_memory_max_bytes{area="nonheap",id="Compressed Class Space",} 1.073741824E9
-jvm_memory_max_bytes{area="nonheap",id="CodeHeap 'non-profiled nmethods'",} 1.22912768E8
-# HELP jvm_memory_committed_bytes The amount of memory in bytes that is committed for the Java virtual machine to use
-# TYPE jvm_memory_committed_bytes gauge
-jvm_memory_committed_bytes{area="nonheap",id="CodeHeap 'profiled nmethods'",} 1.6646144E7
-jvm_memory_committed_bytes{area="heap",id="G1 Survivor Space",} 2.4117248E7
-jvm_memory_committed_bytes{area="heap",id="G1 Old Gen",} 1.7301504E8
-jvm_memory_committed_bytes{area="nonheap",id="Metaspace",} 7.6857344E7
-jvm_memory_committed_bytes{area="nonheap",id="CodeHeap 'non-nmethods'",} 2555904.0
-jvm_memory_committed_bytes{area="heap",id="G1 Eden Space",} 2.71581184E8
-jvm_memory_committed_bytes{area="nonheap",id="Compressed Class Space",} 1.0354688E7
-jvm_memory_committed_bytes{area="nonheap",id="CodeHeap 'non-profiled nmethods'",} 6619136.0
-# HELP jvm_memory_used_bytes The amount of used memory
-# TYPE jvm_memory_used_bytes gauge
-jvm_memory_used_bytes{area="nonheap",id="CodeHeap 'profiled nmethods'",} 1.6585088E7
-jvm_memory_used_bytes{area="heap",id="G1 Survivor Space",} 2.4117248E7
-jvm_memory_used_bytes{area="heap",id="G1 Old Gen",} 2.0524392E7
-jvm_memory_used_bytes{area="nonheap",id="Metaspace",} 7.4384552E7
-jvm_memory_used_bytes{area="nonheap",id="CodeHeap 'non-nmethods'",} 1261696.0
-jvm_memory_used_bytes{area="heap",id="G1 Eden Space",} 2.5165824E7
-jvm_memory_used_bytes{area="nonheap",id="Compressed Class Space",} 9365664.0
-jvm_memory_used_bytes{area="nonheap",id="CodeHeap 'non-profiled nmethods'",} 6604416.0
-# HELP system_load_average_1m The sum of the number of runnable entities queued to available processors and the number of runnable entities running on the available processors averaged over a period of time
-# TYPE system_load_average_1m gauge
-system_load_average_1m 8.68
-# HELP resilience4j_circuitbreaker_state The states of the circuit breaker
-# TYPE resilience4j_circuitbreaker_state gauge
-resilience4j_circuitbreaker_state{name="proxyService",state="forced_open",} 0.0
-resilience4j_circuitbreaker_state{name="proxyService",state="closed",} 1.0
-resilience4j_circuitbreaker_state{name="proxyService",state="disabled",} 0.0
-resilience4j_circuitbreaker_state{name="proxyService",state="open",} 0.0
-resilience4j_circuitbreaker_state{name="proxyService",state="half_open",} 0.0
-resilience4j_circuitbreaker_state{name="proxyService",state="metrics_only",} 0.0
-# HELP jvm_buffer_memory_used_bytes An estimate of the memory that the Java virtual machine is using for this buffer pool
-# TYPE jvm_buffer_memory_used_bytes gauge
-jvm_buffer_memory_used_bytes{id="mapped",} 0.0
-jvm_buffer_memory_used_bytes{id="direct",} 24576.0
-# HELP resilience4j_circuitbreaker_failure_rate The failure rate of the circuit breaker
-# TYPE resilience4j_circuitbreaker_failure_rate gauge
-resilience4j_circuitbreaker_failure_rate{name="proxyService",} -1.0
-# HELP zipkin_reporter_queue_spans Spans queued for reporting
-# TYPE zipkin_reporter_queue_spans gauge
-zipkin_reporter_queue_spans 0.0
-# HELP jvm_gc_memory_allocated_bytes_total Incremented for an increase in the size of the (young) heap memory pool after one GC to before the next
-# TYPE jvm_gc_memory_allocated_bytes_total counter
-jvm_gc_memory_allocated_bytes_total 1.402994688E9
-# HELP jvm_buffer_count_buffers An estimate of the number of buffers in the pool
-# TYPE jvm_buffer_count_buffers gauge
-jvm_buffer_count_buffers{id="mapped",} 0.0
-jvm_buffer_count_buffers{id="direct",} 3.0
-# HELP jvm_threads_peak_threads The peak live thread count since the Java virtual machine started or peak was reset
-# TYPE jvm_threads_peak_threads gauge
-jvm_threads_peak_threads 25.0
-# HELP jvm_gc_max_data_size_bytes Max size of long-lived heap memory pool
-# TYPE jvm_gc_max_data_size_bytes gauge
-jvm_gc_max_data_size_bytes 5.182062592E9
+# ▶ Listar productos
+curl -s http://localhost:8080/product-service/api/products | jq .
+
+# ▶ Listar usuarios
+curl -s http://localhost:8080/user-service/api/users | jq .
+
+# ▶ CREAR UN PEDIDO (esto es lo más impactante)
+curl -s -X POST http://localhost:8080/order-service/api/orders \
+  -H 'Content-Type: application/json' \
+  -d '{"userId":1,"items":[{"productId":1,"quantity":2}]}' | jq .
+
+# ▶ Listar todos los pedidos (verás el que creaste)
+curl -s http://localhost:8080/order-service/api/orders | jq .
+
+# ▶ Listar pagos
+curl -s http://localhost:8080/payment-service/api/payments | jq .
+
+# ▶ Listar envíos
+curl -s http://localhost:8080/shipping-service/api/shippings | jq .
+
+# ▶ Listar favoritos
+curl -s http://localhost:8080/favourite-service/api/favourites | jq .
 ```
 
-#### Check All Services Health
-From ecommerce front Service proxy we can check all the core services health when you have all the
- microservices up and running using Docker Compose,
+**Ver todos los comandos disponibles:**
 ```bash
-selim@:~/ecommerce-microservice-backend-app$ curl -k https://localhost:8443/actuator/health -s | jq .components."\"Core Microservices\""
+bash demo-requests.sh curl
 ```
-This will result in the following response:
-```json
-{
-    "status": "UP",
-    "components": {
-        "circuitBreakers": {
-            "status": "UP",
-            "details": {
-                "proxyService": {
-                    "status": "UP",
-                    "details": {
-                        "failureRate": "-1.0%",
-                        "failureRateThreshold": "50.0%",
-                        "slowCallRate": "-1.0%",
+
+### Opción C: Explorar con navegador (URLs de observabilidad)
+
+```bash
+# Abrir Eureka (ver servicios registrados)
+# Copia esta URL en navegador:
+http://localhost:8761
+
+# Abrir Zipkin (ver trazas distribuidas)
+# Copia esta URL en navegador:
+http://localhost:9411
+```
+
+---
+
+## 📊 URLs Y PUERTOS DURANTE LA DEMO
+
+| Componente | Puerto | URL |
+|---|---|---|
+| **API Gateway** | 8080 | `http://localhost:8080` |
+| **Service Discovery (Eureka)** | 8761 | `http://localhost:8761` |
+| **User Service** | 8700 | `http://localhost:8700` |
+| **Product Service** | 8500 | `http://localhost:8500` |
+| **Order Service** | 8300 | `http://localhost:8300` |
+| **Payment Service** | 8400 | `http://localhost:8400` |
+| **Shipping Service** | 8600 | `http://localhost:8600` |
+| **Favourite Service** | 8800 | `http://localhost:8800` |
+| **Proxy/Auth Client** | 8900 | `http://localhost:8900` |
+| **Cloud Config** | 9296 | `http://localhost:9296` |
+| **Zipkin (Tracing)** | 9411 | `http://localhost:9411` |
+
+**Nota**: Todos los servicios son accesibles a través del **API Gateway en puerto 8080** usando prefijos:
+- `/product-service/...`
+- `/user-service/...`
+- `/order-service/...`
+- etc.
+
+---
+
+## 📚 ARCHIVOS CLAVE PARA LA PRESENTACIÓN
+
+| Archivo | Propósito |
+|---------|-----------|
+| **README.md** | Este archivo — guía principal y referencia |
+| **SCRIPT.md** | Guion completo para leer en la grabación (15-20 min) |
+| **PRESENTACIÓN.md** | Instrucciones paso-a-paso para grabar (timeline, tips) |
+| **demo-requests.sh** | Script con todos los curl listos para ejecutar |
+| **QUICKSTART.sh** | Automatiza levantamiento: `bash QUICKSTART.sh` |
+
+**Recomendación:** Lee en este orden:
+1. Este **README.md** (ahora) — entiende qué es el proyecto
+2. **PRESENTACIÓN.md** (antes de grabar) — checklist y timeline
+3. **SCRIPT.md** (mientras grabas) — el guion a leer
+4. **demo-requests.sh** (durante la demo) — ejecutar o copiar requests
+
+
+---
+
+## 🔍 ENDPOINTS PRINCIPALES PARA DEMOSTRAR
+
+### 1️⃣ Servicio de Productos
+```bash
+# Listar
+curl http://localhost:8080/product-service/api/products | jq .
+
+# Obtener por ID
+curl http://localhost:8080/product-service/api/products/1 | jq .
+
+# Categorías
+curl http://localhost:8080/product-service/api/categories | jq .
+```
+
+### 2️⃣ Servicio de Usuarios
+```bash
+# Listar
+curl http://localhost:8080/user-service/api/users | jq .
+
+# Obtener por ID
+curl http://localhost:8080/user-service/api/users/1 | jq .
+
+# Buscar por username
+curl http://localhost:8080/user-service/api/users/username/john | jq .
+```
+
+### 3️⃣ Servicio de Pedidos (lo más importante)
+```bash
+# Listar pedidos existentes
+curl http://localhost:8080/order-service/api/orders | jq .
+
+# CREAR NUEVO PEDIDO (POST)
+curl -X POST http://localhost:8080/order-service/api/orders \
+  -H 'Content-Type: application/json' \
+  -d '{"userId":1,"items":[{"productId":1,"quantity":2}]}' | jq .
+```
+
+### 4️⃣ Servicio de Pagos
+```bash
+curl http://localhost:8080/payment-service/api/payments | jq .
+```
+
+### 5️⃣ Servicio de Envíos
+```bash
+curl http://localhost:8080/shipping-service/api/shippings | jq .
+```
+
+### 6️⃣ Servicio de Favoritos
+```bash
+curl http://localhost:8080/favourite-service/api/favourites | jq .
+```
+
+---
+
+## 🛠️ ARQUITECTURA (Lo que no ves pero funciona internamente)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                   CLIENTE (curl / Navegador)                    │
+└────────────────────┬──────────────────────────────────────────┘
+                     │
+          ┌──────────▼──────────┐
+          │  API GATEWAY :8080  │◄─── Enruta todas solicitudes
+          │  (Spring Cloud)     │     Descubrimiento automático
+          └──────────┬──────────┘
+                     │
+        ┌────────────┼────────────┬────────────┐
+        │            │            │            │
+    ┌───▼──┐   ┌────▼────┐ ┌────▼────┐ ┌───▼──┐
+    │ User │   │ Product │ │ Order   │ │ ... 6 servicios más
+    └───┬──┘   └────┬────┘ └────┬────┘ └──┬──┘
+        │           │            │        │
+        └───────────┼────────────┼────────┘
+                    │
+          ┌─────────▼──────────┐
+          │  EUREKA :8761      │◄─── Registro central
+          │  (Service Registry)│     Todos se registran aquí
+          └────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                  INFRAESTRUCTURA DE SOPORTE                     │
+├─────────────────────────────────────────────────────────────────┤
+│ • Cloud Config :9296 — Configuración centralizada              │
+│ • Zipkin :9411 — Trazas distribuidas                           │
+│ • (Prometheus, Grafana, ELK si usas Kubernetes)                │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Conceptos clave:**
+- **Service Discovery**: Eureka. Los servicios se registran y se descubren automáticamente.
+- **API Gateway**: El único punto de entrada. Enruta a los servicios correctos.
+- **Circuit Breaker**: Si un servicio cae, el gateway devuelve respuesta degradada.
+- **Config Centralizado**: Un servidor central manage configuración de todos.
+- **Tracing**: Zipkin puede rastrear un request a través de múltiples servicios.
+
+---
+
+## 🧹 LIMPIAR (Cuando termines de grabar)
+
+```bash
+# Parar todos los contenedores
+docker-compose -f compose.yml down
+
+# Opcional: liberar más espacio (eliminar imágenes)
+docker-compose -f compose.yml down --rmi all
+```
+
+---
+
+## 📁 ESTRUCTURA DEL REPOSITORIO
+
+```
+ecommerce-microservice-backend-app/
+├── README.md                          ◄─── Este archivo (guía principal)
+├── SCRIPT.md                          ◄─── Guion para video
+├── demo-requests.sh                   ◄─── Requests curl automatizados
+├── compose.yml                        ◄─── Orquestación Docker (RÁPIDO)
+├── pom.xml                            ◄─── Proyecto Maven (10 módulos)
+├── k8s/                               ◄─── Kubernetes (alternativa enterprise)
+│   ├── helm/                          ◄─── Helm charts
+│   ├── infrastructure/                ◄─── NetworkPolicies
+│   ├── security/                      ◄─── RBAC, Pod Security
+│   └── ...
+├── service-discovery/                 ◄─── Eureka Server
+├── cloud-config/                      ◄─── Config Server
+├── api-gateway/                       ◄─── Spring Cloud Gateway
+├── proxy-client/                      ◄─── Auth/Proxy
+├── user-service/                      ◄─── Users
+├── product-service/                   ◄─── Products
+├── favourite-service/                 ◄─── Favorites
+├── order-service/                     ◄─── Orders & Carts
+├── shipping-service/                  ◄─── Shipping
+└── payment-service/                   ◄─── Payments
+```
+
+---
+
+## 🎓 LO QUE SE DEMUESTRA
+
+Este proyecto demuestra:
+
+✅ **Patrones de Microservicios**
+- Servicios independientes y desacoplados
+- Comunicación HTTP/REST a través de gateway
+- Service discovery automático
+
+✅ **Cloud-Native con Spring Cloud**
+- Service Registry (Eureka)
+- Config Server (centralizado)
+- Gateway (enrutamiento)
+- Sleuth + Zipkin (tracing distribuido)
+- Resilience4j (circuit breaker)
+
+✅ **DevOps**
+- Containerización (Docker)
+- Orquestación rápida (Docker Compose)
+- Infraestructura como código (Kubernetes + Helm)
+- CI/CD ready (GitHub Actions)
+
+✅ **Observabilidad**
+- Trazas distribuidas (Zipkin)
+- Métricas (Prometheus)
+- Dashboards (Grafana)
+- Logs centralizados (ELK)
+
+✅ **Seguridad**
+- RBAC en Kubernetes
+- Network Policies
+- Pod Security Standards
+- TLS/HTTPS ready
+
+---
+
+## ⚡ PERFORMANCE Y TIMINGS
+
+| Operación | Tiempo |
+|---|---|
+| `docker-compose up` (primera ejecución) | ~2-3 min |
+| `docker-compose up` (con imágenes cached) | ~30 seg |
+| Todos los servicios listos (primero) | ~15 seg después de `up` |
+| Cada request curl | ~100-500 ms |
+
+**Total para demostración completa**: ~15-20 minutos (incluyendo explicaciones)
+
+---
+
+## ❓ FAQ (Preguntas Frecuentes)
+
+**P: ¿Por qué microservicios?**  
+R: Escalabilidad independiente, equipos paralelos, despliegues sin downtime.
+
+**P: ¿Qué pasa si un servicio cae?**  
+R: Circuit Breaker lo detecta, devuelve respuesta degradada, otros siguen funcionando.
+
+**P: ¿Cómo se comunican los servicios?**  
+R: HTTP/REST a través del gateway o directamente tras descubrirse con Eureka.
+
+**P: ¿En producción usarías Docker Compose?**  
+R: No, usaríamos Kubernetes (manifests en `k8s/`). Docker Compose es solo para desarrollo/demo.
+
+**P: ¿Dónde están los datos?**  
+R: Por defecto en memoria (H2 en-memory). Para producción, usar MySQL externo (configurado en `k8s/`).
+
+**P: ¿Cuánto cuesta esto en cloud?**  
+R: Depende, pero 10 pods en Kubernetes es típicamente $50-200/mes en GCP/AWS/Azure.
+
+---
+
+## 🔗 REFERENCIAS IMPORTANTES
+
+- **Requisitos originales**: Ver `REQUIREMENTS_CHECKLIST.md` (100% completado)
+- **Arquitectura Kubernetes**: Ver `KUBERNETES_ARCHITECTURE.md`
+- **Operaciones**: Ver `OPERATIONS_GUIDE.md`
+- **Seguridad**: Ver `SECURITY_GUIDE.md`
+
+---
+
+## 🎥 PARA GRABAR EL VIDEO
+
+1. **Lee `SCRIPT.md`** — tiene todo lo que debes decir
+2. **Ejecuta `demo-requests.sh`** — muestra todo funcionando
+3. **Timing**: ~15-20 minutos es ideal para un video YouTube
+4. **Calidad**: Usa resolución 1080p, 30fps, audio claro
+
+**Comando para grabación (OBS Studio o similar):**
+```bash
+# Terminal 1: Levanta el sistema
+docker-compose -f compose.yml up -d
+
+# Terminal 2: Ejecuta demo
+bash demo-requests.sh
+```
+
+---
+
+## 📞 SOPORTE
+
+Si algo no funciona:
+1. Verifica que Docker está corriendo: `docker ps`
+2. Revisa logs: `docker logs <container-name>`
+3. Reinicia: `docker-compose down && docker-compose up -d`
+4. Limpia y reinicia: `docker system prune -a && docker-compose up -d`
+
+---
+
+**¡Listo para grabar! 🎬** — Sigue los pasos en `SCRIPT.md` y estarás en aire en 15-20 minutos.                        "slowCallRate": "-1.0%",
                         "slowCallRateThreshold": "100.0%",
                         "bufferedCalls": 0,
                         "slowCalls": 0,

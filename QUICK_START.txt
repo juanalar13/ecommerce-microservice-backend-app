@@ -1,0 +1,61 @@
+================================================================================
+  ⚡ QUICK START - GRABAR VIDEO EN 20 MINUTOS
+================================================================================
+
+PASO 1: Levanta sistema (abre terminal)
+  docker-compose -f compose.yml up -d
+  [Espera 2-3 minutos]
+
+PASO 2: Abre GUION.md (instrucciones para leer)
+  cat GUION.md
+  [O ábrelo en editor]
+
+PASO 3: Presiona REC en OBS/grabador
+
+PASO 4: Lee GUION.md en voz alta (15-20 minutos)
+
+PASO 5: Cuando GUION.md lo indique (minuto 6), ejecuta:
+  bash demo-commands.sh
+
+PASO 6: Presiona STOP cuando termines
+
+================================================================================
+
+ARCHIVOS QUE NECESITAS:
+  ✓ README.md       - Referencia, documentación
+  ✓ GUION.md        - LEE ESTO mientras grabas
+  ✓ demo-commands.sh - EJECUTA ESTO cuando GUION.md lo diga
+
+IGNORA ESTOS ARCHIVOS:
+  ✗ INICIO_RÁPIDO.md
+  ✗ PRESENTACIÓN.md
+  ✗ CHECKLIST.md
+  ✗ ÍNDICE.md
+  ✗ ENTREGA.md
+  ✗ 00_PUNTO_ENTRADA.md
+  ✗ RESUMEN_ENTREGA.md
+
+================================================================================
+
+URLS PARA MENCIONAR EN VIDEO:
+  • http://localhost:8080  (API Gateway)
+  • http://localhost:8761  (Eureka)
+  • http://localhost:9411  (Zipkin)
+
+================================================================================
+
+TIMING TOTAL:
+  - docker-compose up:    3 minutos
+  - Grabar + demo:       15-20 minutos
+  - TOTAL:               ~20 minutos
+
+================================================================================
+
+¡LISTO! Sigue estos pasos y tendrás tu video en 20 minutos.
+
+Comienza con:
+  docker-compose -f compose.yml up -d
+
+Luego abre GUION.md y comienza a leer en voz alta.
+
+================================================================================
