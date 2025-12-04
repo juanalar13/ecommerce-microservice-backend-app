@@ -1,17 +1,6 @@
-# E-Commerce Microservices - Demostración Completa
+# E-Commerce Microservices - Demostración en Codespaces
 
-**Sistema de 10 microservicios con Spring Boot, Spring Cloud y Docker**
-
----
-
-## 🎯 OBJETIVO
-
-Este proyecto demuestra una arquitectura de **microservicios escalable** con:
-- ✅ 10 microservicios independientes (Spring Boot)
-- ✅ Service Discovery (Eureka)
-- ✅ API Gateway centralizado
-- ✅ Trazas distribuidas (Zipkin)
-- ✅ Configuración centralizada (Spring Cloud Config)
+Sistema de **10 microservicios** con Spring Boot, Spring Cloud y Docker. **Ejecutable en GitHub Codespaces en menos de 5 minutos.**
 
 ---
 
